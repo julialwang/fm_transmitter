@@ -1,9 +1,10 @@
 # FM Transmitter
-Use the Raspberry Pi as an FM transmitter. Works on every Raspberry Pi board.
+Use the Raspberry Pi as an FM transmitter. Works on every Raspberry Pi board. See later portion for Raspbery Pi 4 exceptions.
 
 Just get an FM receiver, connect a 20 - 40 cm plain wire to the Raspberry Pi's GPIO4 (PIN 7 on GPIO header) to act as an antena, and you are ready for broadcasting.
 
 This project uses the general clock output to produce frequency modulated radio communication. It is based on an idea originally presented by [Oliver Mattos and Oskar Weigl](http://icrobotics.co.uk/wiki/index.php/Turning_the_Raspberry_Pi_Into_an_FM_Transmitter) at [PiFM project](http://icrobotics.co.uk/wiki/index.php/Turning_the_Raspberry_Pi_Into_an_FM_Transmitter).
+
 ## How to use it
 To use this project you will have to build the executable. First, clone this repository, then use `make` command as shown below:
 ```
@@ -48,22 +49,5 @@ sudo apt-get install sox libsox-fmt-mp3
 sox my-audio.mp3 -r 22050 -c 1 -b 16 -t wav my-converted-audio.wav
 sudo ./fm_transmitter -f 100.6 my-converted-audio.wav
 ```
-### Microphone support
-In order to use a microphone live input use the `arecord` command, eg.:
-```
-arecord -D hw:1,0 -c1 -d 0 -r 22050 -f S16_LE | sudo ./fm_transmitter -f 100.6 -
-```
-In cases of a performance drop down use ```plughw:1,0``` instead of ```hw:1,0``` like this:
-```
-arecord -D plughw:1,0 -c1 -d 0 -r 22050 -f S16_LE | sudo ./fm_transmitter -f 100.6 -
-```
-## Legal note
-Please keep in mind that transmitting on certain frequencies without special permissions may be illegal in your country.
-## New features
-* DMA peripheral support
-* Allows custom frequency and bandwidth settings
-* Works on every Raspberry Pi model
-* Reads mono and stereo files
-* Reads data from stdin
 
 Included sample audio was created by [graham_makes](https://freesound.org/people/graham_makes/sounds/449409/) and published on [freesound.org](https://freesound.org/)
