@@ -13,7 +13,7 @@ sudo apt-get upgrade
 ```
 Then, install the following packages:
 ```
-sudo apt-get install -y sox make gcc g++ git arecord libmp3lame-dev
+sudo apt-get install -y sox make gcc g++ git alsa-utils libmp3lame-dev
 ```
 Then, clone this repository, then use `make` command as shown below:
 ```
@@ -22,8 +22,7 @@ make
 ``` 
 After a successful build you can start transmitting by executing the "fm_transmitter" program:
 ```
-sox /home/pi/fm_transmitter/acoustic_guitar_duet.wav -r 22050 -c 1 -b 16 -t wav - | sudo
-
+sox /home/pi/fm_transmitter/acoustic_guitar_duet.wav -r 22050 -c 1 -b 16 -t wav - | sudo ./fm_transmitter -f 100.6 -
 ```
 Where:
 * -r defines the sample rate that SOX will convert the file.
