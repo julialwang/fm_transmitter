@@ -6,24 +6,29 @@ Just get an FM receiver, connect a 20 - 40 cm plain wire to the Raspberry Pi's G
 This project uses the general clock output to produce frequency modulated radio communication. It is based on an idea originally presented by [Oliver Mattos and Oskar Weigl](http://icrobotics.co.uk/wiki/index.php/Turning_the_Raspberry_Pi_Into_an_FM_Transmitter) at [PiFM project](http://icrobotics.co.uk/wiki/index.php/Turning_the_Raspberry_Pi_Into_an_FM_Transmitter).
 
 ## How to use it
-To use this project you will have to build the executable. First, clone this repository, then use `make` command as shown below:
+Start by updating your Raspberry Pi with the following commands:
 ```
-git clone https://github.com/markondej/fm_transmitter
+sudo apt-get update
+sudo apt-get upgrade
+```
+Then, install the following packages:
+```
+sudo apt-get install -y sox make gcc g++ git arecord libmp3lame-dev
+```
+Then, clone this repository, then use `make` command as shown below:
+```
 cd fm_transmitter
 make
 ``` 
 After a successful build you can start transmitting by executing the "fm_transmitter" program:
 ```
-sudo ./fm_transmitter -f 102.0 acoustic_guitar_duet.wav
+sox /home/pi/fm_transmitter/acoustic_guitar_duet.wav -r 22050 -c 1 -b 16 -t wav - | sudo
+
 ```
 Where:
-* -f frequency - Specifies the frequency in MHz, 100.0 by default if not passed
-* acoustic_guitar_duet.wav - Sample WAV file, you can use your own
-
-Other options:
-* -d dma_channel - Specifies the DMA channel to be used (0 by default), type 255 to disable DMA transfer, CPU will be used instead
-* -b bandwidth - Specifies the bandwidth in kHz, 100 by default
-* -r - Loops the playback
+* -r defines the sample rate that SOX will convert the file.
+* -c defines the number of channels, due to limitations of FM Transmitter we cut it down to a single channel.
+* -b defines the bit rate that the output should be sampled at.
 
 After transmission has begun, simply tune an FM receiver to chosen frequency, You should hear the playback.
 ### Raspberry Pi 4
@@ -49,5 +54,29 @@ sudo apt-get install sox libsox-fmt-mp3
 sox my-audio.mp3 -r 22050 -c 1 -b 16 -t wav my-converted-audio.wav
 sudo ./fm_transmitter -f 100.6 my-converted-audio.wav
 ```
+
+To add MP3 support, we need to compile and install FFMPEG, since FFMPEG is not available through packages for the Raspbian operating system we will have to do all of this manually.
+```
+cd /usr/src
+sudo git clone https://code.videolan.org/videolan/x264.git
+cd x264
+sudo ./configure --host=arm-unknown-linux-gnueabi --enable-static --disable-opencl
+sudo make
+sudo make install
+cd /usr/src
+sudo git clone git://source.ffmpeg.org/ffmpeg.git ffmpeg
+cd ffmpeg
+sudo ./configure --arch=armv7-a --target-os=linux --enable-gpl --enable-libx264 --enable-nonfree --extra-cflags='-march=armv7-a -mfpu=neon-vfpv4 -mfloat-abi=hard'
+sudo make -j4
+sudo make install
+```
+These steps might take quite awhile; just be patient!
+
+Lastly, you can run:
+```
+cd ~/fm_transmitter
+sudo python ./PiStation.py -f 100.3 example.mp3
+```
+To play any .mp3 file of choice.
 
 Included sample audio was created by [graham_makes](https://freesound.org/people/graham_makes/sounds/449409/) and published on [freesound.org](https://freesound.org/)
